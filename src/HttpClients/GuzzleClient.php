@@ -49,7 +49,7 @@ class GuzzleClient extends AbstractClient
         }
 
         foreach ($headers as $headerKey => $headerValue) {
-            $headers[$headerKey] = $headerKey.':'.$headerValue."\r\n";
+            $headers[$headerKey] = $headerValue;
         }
 
         return $headers;
