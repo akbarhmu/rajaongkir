@@ -2,15 +2,17 @@
 
 namespace Kavist\RajaOngkir;
 
-use Kavist\RajaOngkir\Contracts\HttpClientContract;
-use Kavist\RajaOngkir\Contracts\SearchDriverContract;
-use Kavist\RajaOngkir\HttpClients\AbstractClient;
-use Kavist\RajaOngkir\HttpClients\BasicClient;
 use Kavist\RajaOngkir\Resources\Kota;
-use Kavist\RajaOngkir\Resources\OngkosKirim;
 use Kavist\RajaOngkir\Resources\Provinsi;
-use Kavist\RajaOngkir\SearchDrivers\AbstractDriver;
+use Kavist\RajaOngkir\Resources\Kecamatan;
+use Kavist\RajaOngkir\Resources\OngkosKirim;
+use Kavist\RajaOngkir\HttpClients\BasicClient;
+use Kavist\RajaOngkir\HttpClients\GuzzleClient;
 use Kavist\RajaOngkir\SearchDrivers\BasicDriver;
+use Kavist\RajaOngkir\HttpClients\AbstractClient;
+use Kavist\RajaOngkir\Contracts\HttpClientContract;
+use Kavist\RajaOngkir\SearchDrivers\AbstractDriver;
+use Kavist\RajaOngkir\Contracts\SearchDriverContract;
 
 class RajaOngkir
 {
@@ -38,7 +40,7 @@ class RajaOngkir
         $this->apiKey = $apiKey;
         $this->package = $package;
 
-        $this->setHttpClient(new BasicClient);
+        $this->setHttpClient(new GuzzleClient);
     }
 
     /**
@@ -93,6 +95,25 @@ class RajaOngkir
         }
 
         return $resource;
+    }
+
+    /**
+     * @return \Kavist\RajaOngkir\Resources\Kecamatan;
+     * @throws InvalidConfigurationException
+     */
+    public function kecamatan(): Kecamatan
+    {
+        if ('pro' === $this->package) {
+            $resource = new Kecamatan($this->httpClient);
+
+            if (null === $this->searchDriver) {
+                $resource->setSearchDriver(new BasicDriver);
+                $resource->setSearchColumn();
+            }
+
+            return $resource;
+        }
+        throw InvalidConfigurationException::unsupportedApiPackage($this->package);
     }
 
     /**
